@@ -1,0 +1,24 @@
+{
+  "1": {
+    "id": 1,
+    "title": "New Collections",
+    "subtitle": "Новинки каждую неделю",
+
+    "img": "https://dropshop.su/image/cache/catalog/new_collection-640x549.png",
+    "color": "rgb(255, 255, 153)"
+  },
+  "2": {
+    "id": 2,
+    "title": "Mega Sale -50%",
+    "subtitle": "Успей купить за полцены!",
+    "img": "https://dropshop.su/image/cache/catalog/kisspng-computer-icons-sales-trade-clip-art-sale-lable-5b3cdd948bda25.3232166915307155405728-640x549.png",
+    "color": "rgb(253, 227, 226)"
+  },
+  "3": {
+    "id": 3,
+    "title": "Free Shipping",
+    "subtitle": "Бесплатная доставка почтой",
+    "img": "https://dropshop.su/image/cache/catalog/3e53e0510733c7702bf58102e55aad40-640x549.png",
+    "color": "rgb(204, 255, 204)"
+  }
+}

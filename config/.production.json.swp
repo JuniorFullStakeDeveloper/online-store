@@ -1,0 +1,5 @@
+
+  "db": {
+    dbname: "mongodb+srv://Ryem:100kZaJuniora@cluster0.haeji.mongodb.net/?retryWrites=true&w=majority",
+    port: 5000,
+  }
