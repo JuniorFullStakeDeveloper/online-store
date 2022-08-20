@@ -4,15 +4,42 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { errorMinus, errorPlus } from "../features/hea/headerSlice";
 import NavBar from "./NavBar";
+import {
+  uncorrectEmail,
+  uniqueEmail,
+  uncorrectPassword,
+  uncorrectConfirmPassword,
+  uncorrectNameAndPatronymic,
+  uncorrectRegion,
+  uncorrectIndex,
+  uncorrectCity,
+  uncorrectAddress,
+} from "../features/register/registerSlice";
+import validator from "validator";
 
 function Register() {
+  const uncorrectEmailWarning = "Некорректный Email";
+  const notUniqueEmail = "Данный Email уже зарегистрирован";
+
+  const {
+    uniqueEmailState,
+    uncorrectEmailState,
+    uncorrectPasswordState,
+    uncorrectConfirmPasswordState,
+    uncorrectNameAndPatronymicState,
+    uncorrectRegionState,
+    uncorrectIndexState,
+    uncorrectCityState,
+    uncorrectAddressState,
+  } = useSelector((state) => state.register);
+
   const [formData, setFormData] = useState([
     {
       username: "",
       surname: "",
       email: "",
       phone: "",
-      index: "",
+      index: Number,
       password: "",
       password__confirm: "",
       address: "",
@@ -21,11 +48,10 @@ function Register() {
       region: "",
     },
   ]);
-  const [formWarning, setFormWarning] = useState({});
-  // const errorPlus = useSelector((state) => state.header.errorPlus)
+  const [errorEmail, setErrorEmail] = useState([]);
   const errorss = useSelector((state) => state.header.errorss);
-  // const errorMinus = useSelector((state) => state.header.errorMinus)
   const dispatch = useDispatch();
+  useEffect(() => {}, [errorss, formData]);
   const OnSelectionChangeCountry = (country) => {
     setFormData({
       ...formData,
@@ -46,7 +72,7 @@ function Register() {
       [e.target.name]: e.target.value,
     });
   };
-  console.log(formData);
+  // console.log(formData);
   const createUser = async (req, res) => {
     const user = await axios.post(
       "http://localhost:5000/api/users/createUser",
@@ -55,21 +81,65 @@ function Register() {
     const { data } = await user;
     console.log(data);
   };
-  // if (formData && formData.hasOwnProperty("username")) {
-  // if (formData != String) {
-    dispatch(errorPlus())
-  // }
-  // }
+  let checkEmail;
+  let checkIndex;
+  let checkPassword;
   useEffect(() => {
-    console.log(errorss, formData);
-  }, [errorss]);
+    checkEmail = async () => {
+      if (formData) {
+        const user = await axios.post(
+          `http://localhost:5000/api/users/checkUniqueEmail/${formData.email}`
+        );
+        const { data } = await user;
+        if (!data) {
+          dispatch(uniqueEmail(false));
+        } else {
+          dispatch(uniqueEmail(true));
+        }
+      }
+    };
+    checkIndex = () => {
+      if (formData.index.length < 2 || formData.index.length > 10) {
+        dispatch(uncorrectIndex(false));
+        console.log("Индекс должен содержать от 2 до 10 символов");
+      } else {
+        dispatch(uncorrectIndex(true));
+      }
+    };
+    checkPassword = () => {
+      if (formData.password.length < 4 || formData.password.length > 20) {
+        dispatch(uncorrectPassword(false));
+      } else {
+        dispatch(uncorrectPassword(true));
+      }
+      if (formData.password != formData.password__confirm) {
+        dispatch(uncorrectConfirmPassword(false));
+      } else {
+        dispatch(uncorrectConfirmPassword(true));
+      }
+    };
+  }, [
+    formData.email,
+    formData.index,
+    formData.password,
+    formData.password__confirm,
+  ]);
+
+  const validateEmail = () => {
+    if (validator.isEmail(formData.email)) {
+      dispatch(uncorrectEmail(true));
+      console.log("Valid Email :)");
+    } else {
+      dispatch(uncorrectEmail(false));
+      console.log("Enter valid Email!");
+    }
+  };
 
   return (
     <div>
       <NavBar />
-      {errorss}
       <h1>РЕГИСТРАЦИЯ</h1>
-      Если вы уже зарегистрированы, перейдите на страницу{" "}
+      <p>Если вы уже зарегистрированы, перейдите на страницу</p>
       <Link style={{ borderBottom: "1px dashed #000080" }} to="login">
         авторизации
       </Link>
@@ -94,8 +164,30 @@ function Register() {
         type="email"
         name="email"
         placeholder="E-Mail"
+        onBlur={(e) => {
+          if (!formData.email) {
+            dispatch(uncorrectEmail(false));
+          } else {
+            validateEmail();
+            checkEmail();
+          }
+        }}
       />
       <br />
+      {!uniqueEmailState ? (
+        <>
+          <p style={{ color: "red" }}>{notUniqueEmail}</p>
+        </>
+      ) : (
+        ""
+      )}
+      {!uncorrectEmailState ? (
+        <>
+          <p style={{ color: "red" }}>{uncorrectEmailWarning}</p>
+        </>
+      ) : (
+        ""
+      )}
       <input
         onChange={(e) => formOnChange(e)}
         type="tel"
@@ -104,26 +196,76 @@ function Register() {
       />
       <br />
       <input
-        onChange={(e) => formOnChange(e)}
-        type="text"
+        onChange={(e) => {
+          formOnChange(e);
+        }}
+        type=""
         name="index"
         placeholder="Индекс"
+        onBlur={() => {
+          if (!formData.index) {
+            dispatch(uncorrectIndex(false));
+          } else {
+            checkIndex();
+          }
+        }}
       />
       <br />
+      {!uncorrectIndexState ? (
+        <>
+          <p style={{ color: "red" }}>
+            Индекс должен содержать от 2 до 10 символов
+          </p>
+        </>
+      ) : (
+        ""
+      )}
       <input
         onChange={(e) => formOnChange(e)}
         type="password"
         name="password"
         placeholder="Пароль"
+        onBlur={() => {
+          if (!formData.password) {
+            dispatch(uncorrectPassword(false));
+          } else {
+            checkPassword();
+          }
+        }}
       />
       <br />
+      {!uncorrectPasswordState ? (
+        <>
+          <p style={{ color: "red" }}>
+            Пароль должен содержать от 4 до 20 символов
+          </p>
+        </>
+      ) : (
+        ""
+      )}
       <input
         onChange={(e) => formOnChange(e)}
         type="password"
         name="password__confirm"
         placeholder="Подтвердить пароль"
+        onBlur={() => {
+          if (!formData.password) {
+            dispatch(uncorrectPassword(false));
+          } else {
+            checkPassword();
+          }
+        }}
       />
-      <br />
+      <br />{" "}
+      {!uncorrectConfirmPasswordState ? (
+        <>
+          <p style={{ color: "red" }}>
+            Подтверждение пароля должно совпадать с паролем
+          </p>
+        </>
+      ) : (
+        ""
+      )}
       <input
         onChange={(e) => formOnChange(e)}
         type="text"
@@ -166,7 +308,7 @@ function Register() {
         onChange={(region) => OnSelectionChangeRegion(region)}
         name="region"
         id="input-zone"
-        class="form-control no-border"
+        className="form-control no-border"
       >
         <option value=""> --- Выберите --- </option>
         <option value="Алтайский край">Алтайский край</option>

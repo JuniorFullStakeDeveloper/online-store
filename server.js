@@ -6,7 +6,6 @@ app.use(express.json());
 let mongoose = require("mongoose");
 require("dotenv").config({ path: "./config/.env" });
 
-console.log("no");
 app.use("/api/products", require("./router/Products.router"))
 app.use("/api/category", require("./router/PopularCategory.router"))
 app.use("/api/users", require("./router/User.router"))

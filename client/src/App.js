@@ -11,6 +11,7 @@ import axios from "axios";
 import Register from "./components/Register";
 import { Provider } from 'react-redux'
 import { store } from "./store";
+import NavBar from "./components/NavBar";
 
 // import Int from "./components/Int";
 

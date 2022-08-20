@@ -1,30 +1,30 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
+const headerInitialState = {
   profileActive: false,
   errorss: 0,
-}
+};
 
 export const headerSlice = createSlice({
-  name: 'header',
-  initialState,
+  name: "header",
+  initialState: headerInitialState,
   reducers: {
     // profile:
     profileActiveHeader: (state) => {
-      state.profileActive = !state.profileActive
+      state.profileActive = !state.profileActive;
     },
     // error:
     errorPlus: (state) => {
-      state.errorss = state.errorss + 1
+      state.errorss = state.errorss + 1;
       console.log(state.errorss);
     },
     errorMinus: (state) => {
-      state.errorss = state.errorss - 1
+      state.errorss = state.errorss - 1;
     },
   },
-})
+});
 
-// Action creators are generated for each case reducer function
-export const { profileActiveHeader, errorPlus, errorMinus } = headerSlice.actions
+export const { profileActiveHeader, errorPlus, errorMinus } =
+  headerSlice.actions;
 
-export default headerSlice.reducer
+export default headerSlice.reducer;
