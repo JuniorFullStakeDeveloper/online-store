@@ -10,6 +10,7 @@ const registerInitialState = {
   uncorrectIndexState: true,
   uncorrectCityState: true,
   uncorrectAddressState: true,
+  uncorrectCountryState: true,
 };
 
 export const RegisterSlice = createSlice({
@@ -52,6 +53,10 @@ export const RegisterSlice = createSlice({
     uncorrectNameAndPatronymic: (state, action) => {
       state.uncorrectNameAndPatronymicState = action.payload;
     },
+    // "Укажите Имя Отчество!" если введено имя менее 3х символов и отчество менее 3х символов
+    uncorrectCountry: (state, action) => {
+      state.uncorrectCountryState = action.payload;
+    },
   },
 });
 
@@ -65,6 +70,7 @@ export const {
   uncorrectNameAndPatronymic,
   uncorrectPassword,
   uncorrectRegion,
+  uncorrectCountry
 } = RegisterSlice.actions;
 
 export default RegisterSlice.reducer;

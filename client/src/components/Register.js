@@ -14,6 +14,7 @@ import {
   uncorrectIndex,
   uncorrectCity,
   uncorrectAddress,
+  uncorrectCountry,
 } from "../features/register/registerSlice";
 import validator from "validator";
 
@@ -31,6 +32,7 @@ function Register() {
     uncorrectIndexState,
     uncorrectCityState,
     uncorrectAddressState,
+    uncorrectCountryState,
   } = useSelector((state) => state.register);
 
   const [formData, setFormData] = useState([
@@ -84,6 +86,11 @@ function Register() {
   let checkEmail;
   let checkIndex;
   let checkPassword;
+  let checkAddress;
+  let checkName;
+  let checkCity;
+  let checkCountry;
+  let checkRegion;
   useEffect(() => {
     checkEmail = async () => {
       if (formData) {
@@ -118,11 +125,53 @@ function Register() {
         dispatch(uncorrectConfirmPassword(true));
       }
     };
+    checkAddress = () => {
+      if (formData.address.length < 3 || formData.address.length > 128) {
+        dispatch(uncorrectAddress(false));
+      } else {
+        dispatch(uncorrectAddress(true));
+      }
+    };
+    checkName = () => {
+      const splitArray = formData.username.split(" ");
+      if (splitArray[0].length < 3 || splitArray[1].length < 3) {
+        dispatch(uncorrectNameAndPatronymic(false));
+      } else {
+        dispatch(uncorrectNameAndPatronymic(true));
+      }
+    };
+    checkCity = () => {
+      if (formData.city.length < 2 || formData.city.length > 128) {
+        dispatch(uncorrectCity(false));
+      } else {
+        dispatch(uncorrectCity(true));
+      }
+    };
+
+    checkCountry = () => {
+      if (formData.country === "Страна" || formData.country === undefined) {
+        dispatch(uncorrectCountry(false));
+      } else {
+        dispatch(uncorrectCountry(true));
+      }
+    };
+    checkRegion = () => {
+      if (formData.region === "Регион" || formData.region === undefined) {
+        dispatch(uncorrectRegion(false));
+      } else {
+        dispatch(uncorrectRegion(true));
+      }
+    };
   }, [
     formData.email,
     formData.index,
     formData.password,
     formData.password__confirm,
+    formData.address,
+    formData.username,
+    formData.city,
+    formData.country,
+    formData.region,
   ]);
 
   const validateEmail = () => {
@@ -135,6 +184,8 @@ function Register() {
     }
   };
 
+console.log(formData.region);
+  
   return (
     <div>
       <NavBar />
@@ -149,9 +200,23 @@ function Register() {
         onChange={(e) => formOnChange(e)}
         type="username"
         name="username"
-        placeholder="Имя"
+        placeholder="Имя Отчество"
+        onBlur={() => {
+          if (!formData.username) {
+            dispatch(uncorrectNameAndPatronymic(false));
+          } else {
+            checkName();
+          }
+        }}
       />
       <br />
+      {!uncorrectNameAndPatronymicState ? (
+        <>
+          <p style={{ color: "red" }}>Укажите Имя Отчество!</p>
+        </>
+      ) : (
+        ""
+      )}
       <input
         onChange={(e) => formOnChange(e)}
         type="surname"
@@ -256,7 +321,7 @@ function Register() {
           }
         }}
       />
-      <br />{" "}
+      <br />
       {!uncorrectConfirmPasswordState ? (
         <>
           <p style={{ color: "red" }}>
@@ -271,19 +336,59 @@ function Register() {
         type="text"
         name="address"
         placeholder="Адрес"
+        onBlur={() => {
+          if (!formData.address) {
+            dispatch(uncorrectAddress(false));
+          } else {
+            checkAddress();
+          }
+        }}
       />
       <br />
+      {!uncorrectAddressState ? (
+        <>
+          <p style={{ color: "red" }}>
+            Адрес должен быть от 3 до 128 символов!
+          </p>
+        </>
+      ) : (
+        ""
+      )}
       <input
         onChange={(e) => formOnChange(e)}
         type="text"
         name="city"
         placeholder="Город"
+        onBlur={() => {
+          if (!formData.city) {
+            dispatch(uncorrectCity(false));
+          } else {
+            checkCity();
+          }
+        }}
       />
       <br />
+      {!uncorrectCityState ? (
+        <>
+          <p style={{ color: "red" }}>
+            Город должен быть от 2 до 128 символов!
+          </p>
+        </>
+      ) : (
+        ""
+      )}
       Страна
       <select
         onChange={(country) => OnSelectionChangeCountry(country)}
         name="country"
+        onBlur={() => {
+          console.log(formData.country);
+          if (formData.country === "Страна" || formData.country === undefined) {
+            dispatch(uncorrectCountry(false));
+          } else {
+            checkCountry();
+          }
+        }}
       >
         <option value="Страна">Страна</option>
         {/* <option value="">Армения</option>
@@ -303,14 +408,29 @@ function Register() {
         <option value="">Эстония</option> */}
       </select>
       <br />
+      {!uncorrectCountryState ? (
+        <>
+          
+            <p style={{ color: "red" }}>Выберите страну</p>
+          </>
+        ) : (
+          ""
+        )}
       Регион
       <select
         onChange={(region) => OnSelectionChangeRegion(region)}
         name="region"
         id="input-zone"
         className="form-control no-border"
+        onBlur={() => {
+          if (formData.region === "Регион" || formData.region === undefined) {
+            dispatch(uncorrectRegion(false));
+          } else {
+            checkRegion();
+          }
+        }}
       >
-        <option value=""> --- Выберите --- </option>
+        <option value="Регион">Регион</option>
         <option value="Алтайский край">Алтайский край</option>
         <option value="Амурская область">Амурская область</option>
         <option value="Архангельская область">Архангельская область</option>
@@ -495,6 +615,14 @@ function Register() {
         <option value="282">Zardab</option>
       </select> */}
       <br />
+      {!uncorrectRegionState ? (
+        <>
+          
+            <p style={{ color: "red" }}>Выберите регион</p>
+          </>
+        ) : (
+          ""
+        )}
       <button
         onClick={() => {
           createUser();
